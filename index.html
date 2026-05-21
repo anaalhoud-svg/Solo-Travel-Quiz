@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What kind of solo traveller are you?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F4EF;
+    --card: #FFFFFF;
+    --text: #1A1A18;
+    --muted: #7A7870;
+    --border: #E0DDD6;
+    --accent: #2C5F4A;
+    --accent-light: #EAF2EE;
+    --accent-mid: #4A9B75;
+    --tag-bg: #E8F0EB;
+    --tag-text: #2C5F4A;
+    --selected-bg: #EAF2EE;
+    --selected-border: #2C5F4A;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .site-header {
+    text-align: center;
+    padding: 1.5rem 0 0;
+    margin-bottom: 2rem;
+  }
+
+  .site-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* INTRO */
+  .intro-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  .intro-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+  }
+
+  .intro-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .intro-desc {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin-bottom: 2rem;
+    max-width: 480px;
+  }
+
+  .type-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 2.5rem;
+  }
+
+  .type-tag {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    font-weight: 500;
+    border: 1px solid #C8DDD1;
+  }
+
+  .btn-start {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 14px 28px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .btn-start:hover { background: #214A38; }
+  .btn-start:active { transform: scale(0.98); }
+
+  .intro-footer {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--accent);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* QUIZ */
+  .progress-wrap { margin-bottom: 2rem; }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .progress-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .q-number {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .q-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    line-height: 1.35;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+
+  .opt-btn {
+    width: 100%;
+    text-align: left;
+    padding: 13px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+
+  .opt-btn:hover {
+    border-color: var(--accent-mid);
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+
+  .opt-btn.selected {
+    border: 1.5px solid var(--accent);
+    background: var(--selected-bg);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .opt-btn.selected::before {
+    content: '✓ ';
+    font-size: 12px;
+  }
+
+  .freetext {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--text);
+    resize: none;
+    line-height: 1.6;
+    outline: none;
+    transition: border-color 0.12s;
+  }
+
+  .freetext:focus { border-color: var(--accent); }
+  .freetext::placeholder { color: var(--muted); font-style: italic; }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.75rem;
+  }
+
+  .btn-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.12s;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+  }
+
+  .btn-nav:hover { background: var(--card); color: var(--text); }
+  .btn-nav.primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-nav.primary:hover { background: #214A38; }
+  .btn-nav.primary:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-nav:active { transform: scale(0.98); }
+
+  /* RESULTS */
+  .result-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .result-type-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  .result-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .result-block-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .result-block p, .result-block li {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+  }
+
+  .result-block ul {
+    padding-left: 1.2rem;
+  }
+
+  .result-block li { margin-bottom: 6px; }
+
+  .dest-callout {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--accent);
+  }
+
+  .bars-section { margin: 1.5rem 0; }
+
+  .bar-row { margin-bottom: 10px; }
+
+  .bar-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .bar-track {
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.7s ease;
+  }
+
+  .close-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .close-tag {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    font-weight: 500;
+    border: 1px solid #C8DDD1;
+  }
+
+  .retake-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.12s;
+    margin-top: 1.5rem;
+  }
+
+  .retake-btn:hover { background: var(--card); color: var(--text); }
+
+  @media (max-width: 480px) {
+    .intro-footer { grid-template-columns: 1fr 1fr; }
+    .intro-footer > :last-child { grid-column: 1 / -1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="site-header">
+    <div class="site-name">Solo Travel Quiz</div>
+  </div>
+
+  <!-- INTRO -->
+  <div id="screen-intro" class="screen active">
+    <div class="intro-eyebrow">Discover your travel personality</div>
+    <h1 class="intro-title">What kind of solo traveller <em>are you?</em></h1>
+    <p class="intro-desc">9 quick questions to find your travel type — and get a personalised first trip idea built around exactly how you like to explore.</p>
+    <div class="type-tags">
+      <span class="type-tag">The Reflective Wanderer</span>
+      <span class="type-tag">The Adventure Chaser</span>
+      <span class="type-tag">The Digital Nomad</span>
+      <span class="type-tag">The Urban Explorer</span>
+      <span class="type-tag">The Nature Seeker</span>
+      <span class="type-tag">+ 4 more</span>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">
+      Find my travel type
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="intro-footer">
+      <div><div class="stat-num">9</div><div class="stat-label">questions</div></div>
+      <div><div class="stat-num">9</div><div class="stat-label">travel types</div></div>
+      <div><div class="stat-num">~3</div><div class="stat-label">minutes</div></div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="screen-quiz" class="screen">
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="prog-label">Question 1 of 9</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="q-number" id="q-number">Question 1</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="q-options"></div>
+    <div class="nav-row">
+      <button class="btn-nav" id="btn-back" onclick="goBack()" style="visibility:hidden">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </button>
+      <button class="btn-nav primary" id="btn-next" onclick="goNext()" disabled>
+        Next
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="screen-results" class="screen">
+    <div id="result-area"></div>
+    <button class="retake-btn" onclick="restart()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1 0 1.5-3.9M2 4v4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Retake quiz
+    </button>
+  </div>
+</div>
+
+<script>
+var T = {
+  RW:'The Reflective Wanderer', NS:'The Nature Seeker', SD:'The Spontaneous Drifter',
+  PD:'The Purpose-Driven Traveller', UE:'The Urban Explorer', LS:'The Leisure Seeker',
+  AC:'The Adventure Chaser', CC:'The Cultural Collector', DN:'The Digital Nomad'
+};
+
+var questions = [
+  { text: "When you're planning a trip, you typically...", options: [
+    { text:"Book everything in advance — hotels, activities, transport", scores:{UE:2,CC:2} },
+    { text:"Have a rough outline but leave plenty of room to improvise", scores:{NS:1,AC:1,RW:1} },
+    { text:"Book a flight and figure the rest out when you land", scores:{SD:3} },
+    { text:"Research the best base for wifi and cost of living, then commit", scores:{DN:3} },
+    { text:"Find the most beautiful, restful place and book it all upfront so I can just show up and relax", scores:{LS:3} }
+  ]},
+  { text:"Your perfect travel backdrop is...", options:[
+    { text:"A buzzing city with great transit and endless neighbourhoods to get lost in", scores:{UE:3,DN:1} },
+    { text:"Somewhere wild — mountains, coastline, forest, desert", scores:{NS:3,AC:1} },
+    { text:"A place with deep history and a thriving local culture", scores:{CC:3,PD:1} },
+    { text:"Anywhere peaceful and beautiful where I can think clearly", scores:{RW:3} },
+    { text:"Honestly, anywhere with a great view and a pool", scores:{LS:3} },
+    { text:"Wherever I haven't been yet", scores:{SD:3} }
+  ]},
+  { text:"By the end of a trip, you feel most fulfilled when you've...", options:[
+    { text:"Ticked off everything on your list and discovered some hidden gems", scores:{UE:2,CC:2} },
+    { text:"Genuinely disconnected and come home rested", scores:{LS:3} },
+    { text:"Had a moment that genuinely changed how you think about yourself or the world", scores:{RW:3,PD:1} },
+    { text:"Pushed your limits physically or conquered something scary", scores:{AC:3} },
+    { text:"Made a real contribution or actually made a difference somewhere", scores:{PD:3} },
+    { text:"Stumbled into something you never could have planned", scores:{SD:3} },
+    { text:"Kept your life running smoothly from a completely new place", scores:{DN:3} },
+    { text:"Felt like you were really living it — the food, the language, the rhythm", scores:{CC:2,NS:1} }
+  ]},
+  { text:"On your ideal travel day, your morning looks like...", options:[
+    { text:"Up early, grab a coffee or snack from a local spot, loose plan in hand", scores:{UE:2,CC:2} },
+    { text:"No alarm. Eat when you're hungry, move when you feel like it", scores:{LS:2,SD:2} },
+    { text:"Some quiet time — journaling, a walk, or just sitting with your thoughts before the day starts", scores:{RW:3} },
+    { text:"Knocking out schoolwork or a side project early so the afternoon is completely free", scores:{DN:3} },
+    { text:"Out the door before most people are awake — trailhead, beach, or first run of the day", scores:{NS:2,AC:2} },
+    { text:"Connecting with whoever you're working or volunteering with that morning", scores:{PD:3} }
+  ]},
+  { text:"Travel for you is ideally...", options:[
+    { text:"A full escape — notifications off, completely present", scores:{LS:2,RW:2,AC:1} },
+    { text:"A lifestyle, not just a trip — you'd love to study, freelance, or create from anywhere", scores:{DN:3} },
+    { text:"Something you save and plan for so you can make every day count", scores:{UE:2,CC:2} },
+    { text:"Purposeful — you want to learn a language, volunteer, or actually contribute somewhere", scores:{PD:3} },
+    { text:"Unplanned — you just go and figure out the rest", scores:{SD:3} }
+  ]},
+  { text:"Your ideal social dynamic on the road is...", options:[
+    { text:"Deep solo mode — you're processing the world and genuinely don't want company", scores:{RW:3} },
+    { text:"Striking up conversations with locals, learning their stories", scores:{CC:2,PD:2} },
+    { text:"Fellow travellers at a hostel or on a group trip", scores:{SD:2,AC:1} },
+    { text:"Meeting other young travellers or students who are also working or studying remotely", scores:{DN:3} },
+    { text:"Whoever you meet naturally — no agenda, no plan", scores:{SD:2,UE:1} },
+    { text:"Just you and the landscape — silence is the whole vibe", scores:{NS:3} },
+    { text:"Complete privacy — your own space, your own pace, no small talk", scores:{LS:3} }
+  ]},
+  { text:"The pace that suits you best is...", options:[
+    { text:"One place, long enough to actually settle in and stop feeling like a tourist", scores:{DN:2,PD:2,RW:1} },
+    { text:"A new city every few days — keep it moving", scores:{UE:2,CC:2} },
+    { text:"Wherever feels right — you don't track time when you travel", scores:{SD:3} },
+    { text:"Base camp somewhere beautiful, day trips from there", scores:{NS:2,LS:2} },
+    { text:"As long as it takes to do the thing you came to do", scores:{AC:2,PD:2} }
+  ]},
+  { text:"It's your first evening somewhere new, solo. You...", options:[
+    { text:"Hit the streets with no destination — let the city pull you somewhere", scores:{UE:2,SD:2} },
+    { text:"Find a quiet outdoor spot and sit with it for a while before doing anything", scores:{RW:2,NS:1} },
+    { text:"Immediately find other travellers and make plans for the night", scores:{SD:2,AC:1} },
+    { text:"Check into your hotel, order food, find a great view and genuinely unwind", scores:{LS:3} },
+    { text:"Walk the neighbourhood, clock the transit stops, map out tomorrow", scores:{DN:2,UE:2} },
+    { text:"Check the surf report, trail conditions, or gear up for tomorrow's activity", scores:{AC:2,NS:2} },
+    { text:"Search for something local and live — a market, a gig, a street food strip", scores:{CC:3} },
+    { text:"Go over your volunteer brief or project notes and feel the excitement build", scores:{PD:3} }
+  ]},
+  { text:"Where's one place you'd go tomorrow if you could?", type:"text", placeholder:"Anywhere in the world — a city, a country, a specific spot..." }
+];
+
+var typeData = {
+  RW:{ summary:"You travel to understand yourself better. You're drawn to slow, intentional experiences — the kind where you actually have time to think, feel, and notice things most people rush past.", thrive:["A solo week in Kyoto staying at a traditional ryokan, with nothing booked past breakfast","Renting a small apartment in Lisbon for a month and just... living there","A journalling retreat in the Scottish Highlands with long walks and zero wifi"], superpower:"You know how to be alone without being lonely — and that's rarer than it sounds. You come home from trips genuinely changed, not just tan.", watch:"You can overthink the trip before it starts. Sometimes the most meaningful moments happen when you stop trying to manufacture depth and just show up.", trip:"Porto, Portugal. Wander the Ribeira district at dusk, eat a pastel de nata alone at a café counter, and let the city's melancholy beauty do its thing. No itinerary needed." },
+  NS:{ summary:"You feel most yourself when you're outside. Cities exhaust you; wide open spaces restore you. You're the type who plans trips around landscapes, not landmarks.", thrive:["Hiking the Laugavegur trail in Iceland — four days, hut to hut, nothing but lava fields and hot springs","A solo camping trip through Patagonia with a rented car and zero fixed plans","Waking up to watch the sunrise over the Serengeti on a solo safari"], superpower:"You know how to slow down and actually see where you are. While everyone else is checking their phones, you're watching a hawk circle overhead.", watch:"Safety planning matters more when you're solo in remote places. Tell someone your route, check conditions, and don't let the adventure high override basic prep.", trip:"The Azores, Portugal. Rent a car on São Miguel island, swim in volcanic hot springs, hike the Sete Cidades crater, and eat fresh seafood at a harbour shack. Wildly underrated." },
+  SD:{ summary:"You're allergic to over-planning. You believe the best travel stories start with 'so I had no idea where I was going...' and you've got plenty of them.", thrive:["Buying a one-way ticket to Southeast Asia and seeing where the next bus goes","Saying yes to the invite from the stranger you met at a hostel in Barcelona","Waking up in one city and deciding by 10am to take the train to another one"], superpower:"You say yes to things. That openness creates experiences no travel guide could ever map — and it makes you someone people genuinely want to travel with.", watch:"Spontaneity is a superpower until you're stranded at midnight with no accommodation and a dead phone. Even drifters benefit from a backup plan.", trip:"Catch a cheap flight to Tbilisi, Georgia. Show up. Ask locals where to eat, drink natural wine in a cave bar, and let the city surprise you. It will." },
+  PD:{ summary:"For you, travel isn't just about seeing the world — it's about doing something in it. You want your trips to mean something beyond the 'gram, and that sets you apart.", thrive:["A two-week language immersion programme in Oaxaca, Mexico, staying with a local family","Volunteering with a marine conservation project in the Maldives","A homestay in rural Japan through a cultural exchange programme"], superpower:"You build real relationships with places and people. While others skim the surface, you're having conversations that actually matter — and they change you.", watch:"Make sure your volunteering programme is legitimate and community-led. Not all voluntourism is actually helpful — do your research before you book.", trip:"Granada, Nicaragua. Study Spanish for two weeks, volunteer with a local youth programme, and spend weekends exploring colonial streets and volcanic lakes." },
+  UE:{ summary:"Cities are your playground. You read a new place through its neighbourhoods, its transit maps, its food scene, and the way people move through it at different hours of the day.", thrive:["Getting deliberately lost in the back streets of Tokyo for an entire day","Spending a week eating your way through Mexico City's markets and taquerias","Riding every metro line in a new city just to see where it goes"], superpower:"You know how to read a city fast. Within 48 hours you've found the best coffee, the local spot tourists never find, and a rough mental map of everywhere.", watch:"It's easy to pack so much in that you never actually stop anywhere long enough to feel it. Some of the best city moments happen when you sit still for an hour.", trip:"Seoul, South Korea. Bounce between Insadong, Hongdae, and Bukchon Hanok Village. Eat tteokbokki at a pojangmacha at midnight. Take the subway everywhere." },
+  LS:{ summary:"You've earned this. Travel for you means finally doing exactly what you want, at exactly your pace — and that is a completely valid and underrated form of adventure.", thrive:["A week at a clifftop hotel in Santorini with a stack of books and zero obligations","Finding a beachside bungalow in Thailand and genuinely not moving for five days","A solo spa retreat in Bali where the only decision you make is what to eat for breakfast"], superpower:"You know how to actually rest — and most people don't. You come back from trips genuinely recharged, which means you're better at everything else when you return.", watch:"The first day of doing nothing can feel weirdly uncomfortable. Push through it. By day two, you'll remember what it feels like to be a human being again.", trip:"Koh Lanta, Thailand. Quieter than Koh Samui, prettier than Koh Phangan. Rent a scooter once, eat incredible food, read on the beach, and let the week disappear." },
+  AC:{ summary:"You choose your destination based on what you can do there, not what you can see. The more your friends say 'are you sure that's safe?' the more excited you get.", thrive:["Learning to surf in Taghazout, Morocco, staying at a surf camp for two weeks","A solo ski season in Niseko, Japan — powder, onsen, repeat","Skydiving in Interlaken, then paragliding the next day, then asking what else is on offer"], superpower:"You're genuinely fearless in a way that opens doors. That energy attracts other adventure-minded people, and the stories you collect are ones most people only dream about.", watch:"Solo adventure travel requires more safety prep than group trips. Tell people your plans, get the right insurance, and know the emergency numbers wherever you're going.", trip:"Queenstown, New Zealand. Bungee jumping birthplace, incredible hiking, world-class skiing, and a town built around people who want exactly what you want." },
+  CC:{ summary:"You travel to understand the world, not just see it. You want the story behind the building, the recipe behind the dish, and the history behind the street name.", thrive:["A slow week in Florence going deep on the Renaissance — one museum per day, properly","Attending a local festival in a small town in India that no tourist has ever heard of","Taking a cooking class in a Moroccan home and learning to make tagine from scratch"], superpower:"You ask better questions than anyone else. That curiosity means locals open up to you, and you leave every place with a richer understanding than you arrived with.", watch:"The urge to learn everything can tip into analysis paralysis — spending more time reading about a place than actually being in it. Sometimes you just have to wander.", trip:"Cartagena, Colombia. Wander the walled city, visit the Gold Museum, eat arepas in a market, and take a day trip to San Basilio de Palenque — the first free African town in the Americas." },
+  DN:{ summary:"You've figured out that work and travel don't have to be opposites. You're building a life that moves — and the places you work from are as intentional as the work itself.", thrive:["Renting a flat in Medellín for a month, working mornings, exploring afternoons","A co-living space in Chiang Mai full of other young remote workers and freelancers","Setting up in a Lisbon café with good wifi, a cortado, and a full afternoon ahead"], superpower:"You know how to build a routine in a new place fast. That ability to settle in quickly means you actually experience cities rather than just passing through them.", watch:"The work-life balance is harder to maintain when your office is also your holiday. Set clear work hours, or you'll find yourself answering emails on a beach at sunset.", trip:"Medellín, Colombia. Incredible year-round climate, fast wifi, a thriving digital nomad community, excellent coffee, and a city that rewards the curious. Start with El Poblado." }
+};
+
+var current = 0;
+var answers = new Array(9).fill(null);
+
+function startQuiz() {
+  current = 0; answers = new Array(9).fill(null);
+  showScreen('quiz'); renderQ();
+}
+
+function renderQ() {
+  var q = questions[current];
+  var pct = Math.round((current/9)*100);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-label').textContent = 'Question '+(current+1)+' of 9';
+  document.getElementById('prog-pct').textContent = pct+'%';
+  document.getElementById('q-number').textContent = 'Question '+(current+1);
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('btn-back').style.visibility = current > 0 ? 'visible' : 'hidden';
+  var nb = document.getElementById('btn-next');
+  nb.textContent = current===8 ? 'See my results' : 'Next';
+  nb.disabled = (answers[current]===null || answers[current]==='');
+  var container = document.getElementById('q-options');
+  container.innerHTML = '';
+  if (q.type==='text') {
+    var ta = document.createElement('textarea');
+    ta.className = 'freetext'; ta.rows = 3; ta.placeholder = q.placeholder||'';
+    ta.value = answers[current]||'';
+    ta.addEventListener('input', function(){ answers[current]=ta.value.trim(); document.getElementById('btn-next').disabled=!answers[current]; });
+    container.appendChild(ta);
+  } else {
+    q.options.forEach(function(opt){
+      var btn = document.createElement('button');
+      btn.className = 'opt-btn'+(answers[current]===opt.text?' selected':'');
+      btn.textContent = opt.text;
+      btn.addEventListener('click', function(){
+        answers[current]=opt.text;
+        container.querySelectorAll('.opt-btn').forEach(function(b){ b.classList.remove('selected'); });
+        btn.classList.add('selected');
+        document.getElementById('btn-next').disabled=false;
+      });
+      container.appendChild(btn);
+    });
+  }
+}
+
+function goNext() { if(current<8){current++;renderQ();}else{showResults();} }
+function goBack() { if(current>0){current--;renderQ();} }
+
+function calcScores() {
+  var scores={};
+  Object.keys(T).forEach(function(k){scores[k]=0;});
+  for(var i=0;i<8;i++){
+    var q=questions[i]; if(q.type==='text') continue;
+    q.options.forEach(function(opt){ if(opt.text===answers[i]){ Object.keys(opt.scores).forEach(function(k){scores[k]+=opt.scores[k];}); }});
+  }
+  return scores;
+}
+
+function showResults() {
+  showScreen('results');
+  var scores=calcScores();
+  var sorted=Object.keys(scores).sort(function(a,b){return scores[b]-scores[a];});
+  var topKey=sorted[0], secondKey=sorted[1], thirdKey=sorted[2];
+  var top=typeData[topKey];
+  var dest=answers[8]||null;
+  var maxScore=scores[sorted[0]];
+
+  var destHtml = dest ? '<div class="dest-callout">And that instinct to head to <strong>'+esc(dest)+'</strong>? That tracks — it\'s exactly where a '+esc(T[topKey])+' would want to be.</div>' : '';
+
+  var thriveLis = top.thrive.map(function(t){ return '<li>'+esc(t)+'</li>'; }).join('');
+
+  var barsHtml = sorted.slice(0,5).map(function(k){
+    var pct = maxScore>0 ? Math.round((scores[k]/maxScore)*100) : 0;
+    return '<div class="bar-row"><div class="bar-meta"><span>'+esc(T[k])+'</span><span>'+pct+'%</span></div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%"></div></div></div>';
+  }).join('');
+
+  document.getElementById('result-area').innerHTML =
+    '<div class="result-eyebrow">Your solo travel type</div>'+
+    '<div class="result-type-name">'+esc(T[topKey])+'</div>'+
+    '<div class="result-block"><p>'+esc(top.summary)+'</p>'+destHtml+'</div>'+
+    '<div class="result-block"><div class="result-block-label">✈️ You\'d thrive...</div><ul>'+thriveLis+'</ul></div>'+
+    '<div class="result-block"><div class="result-block-label">🎒 Your travel superpower</div><p>'+esc(top.superpower)+'</p></div>'+
+    '<div class="result-block"><div class="result-block-label">⚡ One thing to watch</div><p>'+esc(top.watch)+'</p></div>'+
+    '<div class="result-block"><div class="result-block-label">🗺️ First trip idea</div><p>'+esc(top.trip)+'</p></div>'+
+    '<div class="bars-section"><div style="font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px">Your full type breakdown</div>'+barsHtml+'</div>'+
+    '<div><div style="font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px">You also have strong streaks of...</div><div class="close-types"><span class="close-tag">'+esc(T[secondKey])+'</span><span class="close-tag">'+esc(T[thirdKey])+'</span></div></div>';
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function restart(){ current=0; answers=new Array(9).fill(null); showScreen('intro'); }
+function showScreen(n){ document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');}); document.getElementById('screen-'+n).classList.add('active'); window.scrollTo(0,0); }
+</script>
+</body>
+</html>
